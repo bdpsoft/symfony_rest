@@ -34,10 +34,6 @@ class User implements UserInterface
      */
     private $password;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="users")
-     */
-    private $company;
 
     public function getId(): ?int
     {
@@ -117,15 +113,4 @@ class User implements UserInterface
         // $this->plainPassword = null;
     }
 
-    public function getCompany(): ?Company
-    {
-        return $this->company;
-    }
-
-    public function setCompany(?Company $company): self
-    {
-        $this->company = $company;
-
-        return $this;
-    }
 }
