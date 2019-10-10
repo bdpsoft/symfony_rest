@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @ApiResource()
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
 class User implements UserInterface
@@ -33,6 +34,17 @@ class User implements UserInterface
      * @ORM\Column(type="string")
      */
     private $password;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CompanyUser", mappedBy="user")
+     */
+    private $companyUsers;
+
+    
+    public function __construct()
+    {
+        $this->companyUsers = new ArrayCollection();
+    }
 
 
     public function getId(): ?int
@@ -112,5 +124,37 @@ class User implements UserInterface
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
+
+    /**
+     * @return Collection|CompanyUser[]
+     */
+    public function getCompanyUsers(): Collection
+    {
+        return $this->companyUsers;
+    }
+
+    public function addCompanyUser(CompanyUser $companyUser): self
+    {
+        if (!$this->companyUsers->contains($companyUser)) {
+            $this->companyUsers[] = $companyUser;
+            $companyUser->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompanyUser(CompanyUser $companyUser): self
+    {
+        if ($this->companyUsers->contains($companyUser)) {
+            $this->companyUsers->removeElement($companyUser);
+            // set the owning side to null (unless already changed)
+            if ($companyUser->getUser() === $this) {
+                $companyUser->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
 
 }

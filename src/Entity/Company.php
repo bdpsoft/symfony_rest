@@ -25,9 +25,15 @@ class Company
      */
     private $company_name;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\CompanyUser", mappedBy="company")
+     */
+    private $companyUsers;
+
+
     public function __construct()
     {
-        $this->users = new ArrayCollection();
+        $this->companyUsers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -47,4 +53,36 @@ class Company
         return $this;
     }
 
+    /**
+     * @return Collection|CompanyUser[]
+     */
+    public function getCompanyUsers(): Collection
+    {
+        return $this->companyUsers;
+    }
+
+    public function addCompanyUser(CompanyUser $companyUser): self
+    {
+        if (!$this->companyUsers->contains($companyUser)) {
+            $this->companyUsers[] = $companyUser;
+            $companyUser->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompanyUser(CompanyUser $companyUser): self
+    {
+        if ($this->companyUsers->contains($companyUser)) {
+            $this->companyUsers->removeElement($companyUser);
+            // set the owning side to null (unless already changed)
+            if ($companyUser->getCompany() === $this) {
+                $companyUser->setCompany(null);
+            }
+        }
+
+        return $this;
+    }
+
+    
 }
